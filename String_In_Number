@@ -1,0 +1,9 @@
+@name String_In_Number
+
+function number n(Str:string){
+    local N=0
+    for(I=1, Str:length()){
+        N=N+toByte(Str[I])
+    }
+    return N
+}
