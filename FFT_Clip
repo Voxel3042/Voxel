@@ -1,17 +1,13 @@
 @name FFT_Clip
-@persist [E O]:entity F:array SS S
+@persist [E O Eb]:entity F:array SS Size
 @persist [Site Link Title TextSearch Music]:string
 @persist [Table Request Titl]:table
 @persist [Names Links]:array
 @persist Show I 
 
-runOnTick(1)
-
-runOnHTTP(1)
-
 if(first()){
     runOnTick(1)    
-    
+    runOnHTTP(1)    
     Names = array()
     Links = array()
     
@@ -98,39 +94,39 @@ if(first()){
     
     E=entity()
     O=owner()
-    
+    Size=0.1
     noDuplications()
     
     for(I=1,26){    
-        holoCreate(I,E:toWorld(vec(-3+I*15,0,80)))
+        holoCreate(I,E:toWorld(vec(-3+I*15,0,80)*Size))
         holoClipEnabled(I,1)
         holoParent(I,E)
         holoAng(I,E:toWorld(ang(90,0,0)))
-        holoScale(I,vec(1,1,2.3))
+        holoScale(I,vec(1,1,2.3)*Size)
         holoDisableShading(I,1)
         holoModel(I,"models/Mechanics/gears2/pinion_40.mdl")
         holoMaterial(I,"models/debug/debugwhite")
         holoColor(I,hsv2rgb(I*360/26,1,1))      
         
-        holoCreate(1000+I,E:toWorld(vec(-3+I*15,0,80)))
-        holoScale(1000+I,vec(1.2,0.4,0.3))
+        holoCreate(1000+I,E:toWorld(vec(-3+I*15,0,80)*Size))
+        holoScale(1000+I,vec(1.2,0.4,0.3)*Size)
         holoDisableShading(1000+I,1)
         holoColor(1000+I,hsv2rgb(I*360/26,1,1))
-        
+        holoAlpha(1000+I,0)
         holoClip(I,vec(0,0,0),vec(0,0,-1),holoEntity(1000+I))
     }
-    holoCreate(27,E:toWorld(vec(200,5,80)))
+    holoCreate(27,E:toWorld(vec(200,5,80)*Size))
     holoParent(27,E)
-    holoScale(27,vec(35,1,12.5))
+    holoScale(27,vec(35,1,12.5)*Size)
     holoDisableShading(27,1)
     holoColor(27,vec(0))
     
-    holoCreate(28,E:toWorld(vec(200,5,80)))
+    holoCreate(28,E:toWorld(vec(200,5,80)*Size))
     holoParent(28,E)
-    holoScale(28,vec(-35.5,-1.5,-13))
+    holoScale(28,vec(-35.5,-1.5,-13)*Size)
     holoDisableShading(28,1)
     
-    #soundURLload(1,"https://musicport.org/dl/1102318462/Akame_ga_Kill_-_OP-2_(musicport.org).mp3",100,0,holoEntity(28))
+    #soundURLload(1,"https://musicport.org/dl/1102318462/Akame_ga_Kill_-_OP-2_(musicport.org).mp3",100,0,Eb)
     #http://142.4.217.133:9848/stream
     #http://air.radiorecord.ru:8102/dub_320
 }
@@ -141,6 +137,6 @@ F=entity():soundFFT(1)
 for(I=1,26)
 {
     S=clamp(sqrt(F[I, number]*sqrt(F[I, number])*sqrt(F[I, number])), 0, 1000)
-    holoPos(1000+I,E:toWorld(vec(-3+I*15,0,20+S)))
+    holoPos(1000+I,E:toWorld(vec(-3+I*15,0,20+S)*Size))
 }
 holoColor(28,hsv2rgb(SS,1,S))
