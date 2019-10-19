@@ -1,0 +1,19 @@
+@name Lerp
+@persist Lerp:array
+
+function number lerp(Index, T, From, To){
+    if(first()){
+        Lerp[Index,number]=From
+    }
+        
+    if(Lerp[Index,number]>To){
+        Lerp[Index,number]=Lerp[Index,number]-Lerp[Index,number]/T
+    }elseif(Lerp[Index,number]<To){
+        Lerp[Index,number]=Lerp[Index,number]+(To-Lerp[Index,number])/T
+    }
+    return Lerp[Index,number]
+}
+
+function number lerp(Index){
+    return Lerp[Index,number]
+}
