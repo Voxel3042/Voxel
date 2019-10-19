@@ -2,17 +2,22 @@
 @persist Lerp:array
 
 function number lerp(Index, T, From, To){
-    if(first()){
-        Lerp[Index,number]=From
+        if(!Lerp[Index,number]){
+            Lerp[Index,number]=From
+        }
+        if(changed(Lerp[Index,number]==From) & Lerp[Index,number]==From){
+            timer("Lerp"+Index, T)
+        }
+        if(clk("Lerp"+Index) & (round(Lerp[Index,number]/0.01)*0.01)!=To){
+            timer("Lerp"+Index, T)
+            if(Lerp[Index,number]>To){
+                Lerp[Index,number]=Lerp[Index,number]-Lerp[Index,number]/T
+            }elseif(Lerp[Index,number]<To){
+                Lerp[Index,number]=Lerp[Index,number]+(To-Lerp[Index,number])/T
+            }
+        }
+        return round(Lerp[Index,number]/0.01)*0.01
     }
-        
-    if(Lerp[Index,number]>To){
-        Lerp[Index,number]=Lerp[Index,number]-Lerp[Index,number]/T
-    }elseif(Lerp[Index,number]<To){
-        Lerp[Index,number]=Lerp[Index,number]+(To-Lerp[Index,number])/T
+    function number getLerp(Index){
+        return round(Lerp[Index,number]/0.01)*0.01
     }
-    return round(Lerp[Index,number]/0.01)*0.01
-}
-function number getLerp(Index){
-    return round(Lerp[Index,number]/0.01)*0.01
-}
