@@ -14,6 +14,6 @@ function number lerp(Index, T, From, To){
     return Lerp[Index,number]
 }
 
-function number lerp(Index){
+function number getLerp(Index){
     return Lerp[Index,number]
 }
