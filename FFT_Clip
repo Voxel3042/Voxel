@@ -88,13 +88,145 @@ if(dClk("Play")){
     print(Music)
 }
 
+@name FFT_Clip
+@persist [E O Eb]:entity F:array SS Size
+@persist [Site Link Title TextSearch Music]:string
+@persist [Table Request Titl]:table
+@persist [Names]:array
+@persist I 
+@persist SongInfo:string Show On Index Hour Min Sec N
+@persist [URLs SongsNames Durations]:table [SongsInfo FFT]:array
+
+if(first())
+{
+    noDuplications()
+    E=entity()
+    O=owner()
+    
+    dPanel("Menu",vec2(scrW()/2,scrH()/2),vec2(350,330))
+    dColor("Menu",55,155,155,155)
+    dShowCloseButton("Menu",0)
+    dShow("Menu",0)
+    
+    dTextBox("String","Menu",vec2(5,28),260)
+    
+    dButton("Search","Menu",vec2(266,28),vec2(79,20))
+    
+    dSlider("Volume","Menu", vec2(8,290),350,0,100)
+    dSetNval("Volume",100)
+    
+    dButton("Play","Menu",vec2(5,49),vec2(340,20))
+    
+    dListBox("Songs","Menu",vec2(5,70),vec2(340,225))
+    dColor("Songs",55,155,155,155)
+    
+    setName("Music Player" +
+        "\nSleepeng mode")
+    
+    soundURLPurge()
+    runOnKeys(O,1)
+    runOnHTTP(1)
+    runOnTick(1)
+}
+
+if(changed(O:keyPressed("T")) & O:keyPressed("T"))
+{
+    Show = !Show
+    dShow("Menu",Show)
+    enableMouse(Show)
+}
+
+if(dClk("Search"))
+{
+    SongsInfo:clear()
+    local Request = "https://muzmo.website/music/" + httpUrlEncode(dSval("String"))
+    httpRequest(Request)
+}
+
+if(httpClk())
+{
+    local Data = httpData()
+    URLs = Data:gmatch("norber%=\"(.-)\"")
+    SongsNames = Data:gmatch("xftitle=\"(.-)\"")
+    Durations = Data:gmatch("td class=\"time\">(.-)</td>")
+    
+    if(URLs:count())
+    {
+        for(I = 1,URLs:count())
+        {
+            local Time = Durations[I,array][1,string]
+            local SongName = SongsNames[I,array][1,string]
+            SongsInfo:pushString((I + ". [" + Time + "] " + SongName):replace("&gt;",">"):replace("&amp;","&"):replace("&quot;","\""))
+        }
+    }
+    else
+    {
+        SongsInfo:setString(1,"  !")
+    }
+    
+    dArray("Songs",SongsInfo)
+}
+
+if(dClk("Play"))
+{
+    local Index = dSval("Songs"):explode("."):string(1):toNumber()
+    On = 1
+    
+    soundURLPurge()
+    soundURLload(1,URLs[Index,array][1,string],1,0,E)
+    soundURLvolume(1,dNval("Volume") / 100)
+    print(URLs[Index,array][1,string])
+    
+    local T = Durations[Index,array][1,string]:reverse():explode(":")
+    Hour = T:string(3):reverse():toNumber()
+    Min = T:string(2):reverse():toNumber()
+    Sec = T:string(1):reverse():toNumber()
+}
+
+if(On)
+{
+    local Timer = floor(curtime())
+    if(changed(Timer))
+    {
+        Sec = (Sec - 1) % 60
+        Min = (Min - floor(Sec / 59)) % 60
+        Hour -= floor(Min / 59)
+        local Time = Hour + ":" + ((Min > 9)? Min:toString() : "0" + Min) + ":" + ((Sec > 9)? Sec:toString() : "0" + Sec)
+        
+        setName("Music Player" +
+            "\nNow playing:" +
+            "\n" + SongInfo +
+            "\nTime left: " + Time +
+            "\nVolume: " + round(dNval("Volume")))
+        
+        if(Hour < 0)
+        {
+            On = 0
+        }
+    }
+    
+    if(changed(dNval("Volume")))
+    {
+        soundURLvolume(1,dNval("Volume") / 100)
+    }
+}
+else
+{
+    setName("Music Player" +
+        "\nSleepeng mode")
+}
+
+
+####
+if(first()){
+    runOnTick(1)    
+    runOnHTTP(1)    
+}
+
 SS=(SS+0.01)%360
 
 if(first()){
-    
-    E=entity()
-    O=owner()
-    Size=0.1
+    Size=1.3
     noDuplications()
     
     for(I=1,26){    
