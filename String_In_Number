@@ -1,7 +1,9 @@
 @persist SukaEbanayaTable:table IndexEbuchiye
 
 function number n(Str:string){
-    IndexEbuchiye++
+    if(!SukaEbanayaTable[Str, number]){
+        IndexEbuchiye++
+    }
     SukaEbanayaTable[Str, number] = IndexEbuchiye
     return SukaEbanayaTable[Str, number]
 }
