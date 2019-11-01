@@ -1,9 +1,10 @@
-@name String_In_Number
+@persist SukaEbanayaTable:table IndexEbuchiye
 
 function number n(Str:string){
-    local N=0
-    for(I=1, Str:length()){
-        N=N+toByte(Str[I])
-    }
-    return N
+    IndexEbuchiye++
+    SukaEbanayaTable[Str, number] = IndexEbuchiye
+    return SukaEbanayaTable[Str, number]
+}
+function number getN(Str:string){
+    return SukaEbanayaTable[Str, number]
 }
