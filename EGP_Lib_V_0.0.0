@@ -1,0 +1,384 @@
+@name EGP_Lib
+@persist [PosSukaBlyatEbaniy]:vector2 SukaEbanayaTable:table Version:string IdPosaBlyatEbanogo IndexEbuchiye X Y
+#include "Chip_MDL"
+#include "EGP_MDL"
+
+Version="0.0.0"
+function number n(Str:string){
+    if(!SukaEbanayaTable[Str, number]){
+        IndexEbuchiye++
+    }
+    SukaEbanayaTable[Str, number] = IndexEbuchiye
+    return SukaEbanayaTable[Str, number]
+}
+function number getN(Str:string){
+    return SukaEbanayaTable[Str, number]
+}
+
+function removeN(ID:string){
+    SukaEbanayaTable:removeNumber(ID)
+}
+
+function wirelink connect(){
+    EGP = entity():isWeldedTo():wirelink()
+    EGP:egpClear() return EGP 
+}
+
+function number mouseOver( ID:string ){
+    return inrange(EGP:egpCursor(owner()), EGP:egpPos(getN(ID)) - EGP:egpSize(getN(ID)) / 2 , EGP:egpPos(getN(ID)) + EGP:egpSize(getN(ID)) / 2 )
+}
+function number click(){
+    return changed(owner():keyUse())&owner():keyUse()
+}
+function void grabElement(ID:string){
+    if(mouseOver(ID)){
+        if(changed(owner():keyUse()) & owner():keyUse()){
+            IdPosaBlyatEbanogo=getN(ID)
+            PosSukaBlyatEbaniy=(EGP:egpCursor(owner()) - EGP:egpPos(getN(ID)))
+        }
+    }
+    if(IdPosaBlyatEbanogo){
+        if(IdPosaBlyatEbanogo==getN(ID)){
+            EGP:egpPos(getN(ID),EGP:egpCursor(owner())-PosSukaBlyatEbaniy)
+        }
+        if(!owner():keyUse() & IdPosaBlyatEbanogo!=0){
+            IdPosaBlyatEbanogo=0
+            PosSukaBlyatEbaniy=vec2()
+        }
+    }
+}
+
+# -- WORLD TIME
+
+function string worldTime(){
+        
+    if( date()[ "hour" , number ] < 10 ){
+        H = "0" + ( date()[ "hour" , number ] + 1 ):toString()     
+    }else{
+        H = ( date()[ "hour" , number ] + 1 ):toString() 
+    }
+        
+    if( date()[ "min" , number ] < 10 ){
+        M = "0" + date()[ "min" , number ]:toString()
+    }else{
+        M = date()[ "min" , number ]:toString() 
+    }
+        
+    return H:toNumber()-1 + ":" + M
+}         
+
+# -- BOX
+function void drawBox(ID:string, Pos:vector2, Size:vector2, Clr:vector){
+    EGP:egpBox(n(ID), Pos, Size)
+    EGP:egpColor(getN(ID), Clr)
+}
+function void drawBox(ID:string, Pos:vector2, Size:vector2){
+    EGP:egpBox(n(ID), Pos, Size)
+}
+# -- BOX OUTLINE
+function void drawBoxOutline(ID:string, Pos:vector2, Size:vector2, Clr:vector){
+    EGP:egpBoxOutline(n(ID), Pos, Size)
+    EGP:egpColor(getN(ID), Clr)
+}
+function void drawBoxOutline(ID:string, Pos:vector2, Size:vector2){
+    EGP:egpBoxOutline(n(ID), Pos, Size)
+}
+# -- ROUNDED BOX
+function void drawBoxRounded(ID:string, Pos:vector2, Scale:vector2, Clr:vector){
+    EGP:egpRoundedBox(n(ID) , Pos , Scale )
+    EGP:egpColor(getN(ID) , Clr )  
+}
+# -- ROUNDED BOX OUTLINE
+function void drawBoxRoundedOutline(ID:string, Pos:vector2, Scale:vector2, Clr:vector){
+    EGP:egpRoundedBoxOutline(n(ID) , Pos , Scale )
+    EGP:egpColor(getN(ID) , Clr )  
+}
+# -- CIRCLE
+function void drawCircle(ID:string, Pos:vector2, Size:vector2, Clr:vector){
+    EGP:egpCircle(n(ID), Pos, Size)
+    EGP:egpColor(getN(ID), Clr)
+}
+function void drawCircle(ID:string, Pos:vector2, Size:vector2){
+    EGP:egpCircle(n(ID), Pos, Size)
+}
+# -- CIRCLE OUTLINE
+function void drawCircleOutline(ID:string, Pos:vector2, Size:vector2, Clr:vector){
+    EGP:egpCircleOutline(n(ID), Pos, Size)
+    EGP:egpColor(getN(ID), Clr)
+}
+function void drawCircleOutline(ID:string, Pos:vector2, Size:vector2){
+    EGP:egpCircleOutline(n(ID), Pos, Size)
+}
+# -- POLY
+function void drawPoly(ID:string, Pos:array, Clr:vector){
+    EGP:egpPoly(n(ID), Pos)
+    EGP:egpColor(getN(ID), Clr)
+}
+function void drawPoly(ID:string, Pos:array){
+    EGP:egpPoly(n(ID), Pos)
+}
+# -- POLY OUTLINE
+function void drawPolyOutline(ID:string, Pos:array, Clr:vector){
+    EGP:egpPolyOutline(n(ID), Pos)
+    EGP:egpColor(getN(ID), Clr)
+}
+function void drawPolyOutline(ID:string, Pos:array){
+    EGP:egpPolyOutline(n(ID), Pos)
+}
+# -- COLOR
+function void drawColor(ID:string, Clr:vector){
+    if(getN(ID)!=0){
+        EGP:egpColor(getN(ID), Clr)
+    }
+}
+# -- POS
+function void drawPos(ID:string, Pos:vector2){
+    if(getN(ID)!=0){
+        EGP:egpPos(getN(ID), Pos)
+    }
+}
+function vector2 drawPos(ID:string){
+    return EGP:egpPos(getN(ID))
+}
+# -- IS VALID
+function number drawIsValid(ID:string){
+    if(!getN(ID)){
+        return 0
+    }else{
+        return 1
+    }
+}
+# -- TEXT
+function void drawText(ID:string, Text:string, Pos:vector2, Clr:vector, Scale){
+    EGP:egpText(n(ID), Text, Pos)
+    EGP:egpAlign(getN(ID), 1, 1)
+    EGP:egpSize(getN(ID), Scale)
+    EGP:egpColor(getN(ID), Clr)
+}
+function void drawText(ID:string, Text:string, Pos:vector2, Scale){
+    EGP:egpText(n(ID), Text, Pos)
+    EGP:egpAlign(getN(ID), 1, 1)
+    EGP:egpSize(getN(ID), Scale)
+}
+function void drawSetText(ID:string, Text:string){
+    EGP:egpSetText(getN(ID), Text)
+}
+function void drawSetButtonText(ID:string, Text:string){
+    EGP:egpSetText(getN(ID+"btntext"), Text)
+}
+# -- SIZE
+function void drawSize(ID:string, Size:vector2){
+    EGP:egpSize(getN(ID), Size)
+}
+function void drawSize(ID:string, Size){
+    EGP:egpSize(getN(ID), Size)
+}
+function vector2 drawSize(ID:string){
+    return EGP:egpSize(getN(ID))
+}
+# -- ANGLE
+function void drawAng(ID:string, Ang){
+    EGP:egpAngle(getN(ID), Ang)
+}
+function number drawAng(ID:string){
+    return EGP:egpAngle(getN(ID))
+}
+# -- BOX BUTTON
+function void drawBoxButton(ID:string , Pos:vector2 , Scale:vector2 , BColor:vector , Text:string , TextColor:vector , Size ){
+    EGP:egpBox(n(ID) , Pos , Scale )
+    EGP:egpColor(getN(ID) , BColor )
+    
+    drawText(ID+"btntext", Text, vec2(), TextColor, Size)
+    EGP:egpParent(getN(ID+"btntext"),getN(ID))
+}  
+function void drawBoxOutlineButton( ID:string , Pos:vector2 , Scale:vector2 , BColor:vector , Text:string , TextColor:vector , Size, Size2){
+    EGP:egpBoxOutline(n(ID) , Pos , Scale )
+    EGP:egpSize(getN(ID), Size2)
+    EGP:egpColor(getN(ID) , BColor )
+
+    drawText(ID+"btntext", Text, vec2(), TextColor, Size)
+    EGP:egpParent(getN(ID+"btntext"),getN(ID))
+
+}
+# -- BOX ROUNDED BUTTON
+function void drawBoxRoundedButton(ID:string , Pos:vector2 , Scale:vector2 , BColor:vector , Text:string , TextColor:vector , Size, Size2){
+    EGP:egpRoundedBox(n(ID) , Pos , Scale )
+    EGP:egpSize(getN(ID), Size2)
+    EGP:egpColor(getN(ID) , BColor )
+
+    drawText(ID+"btntext", Text, vec2(), TextColor, Size)
+    EGP:egpParent(getN(ID+"btntext"),getN(ID))
+}
+function void drawBoxRoundedOutlineButton(ID:string , Pos:vector2 , Scale:vector2 , BColor:vector , Text:string , TextColor:vector , Size, Size2){
+    EGP:egpRoundedBoxOutline(n(ID) , Pos , Scale )
+    EGP:egpSize(getN(ID), Size2)
+    EGP:egpColor(getN(ID) , BColor )
+
+    drawText(ID+"btntext", Text, vec2(), TextColor, Size)
+    EGP:egpParent(getN(ID+"btntext"),getN(ID))
+}
+# -- TRIANGLE
+function void drawTriangle(ID:string , Pos1:vector2 , Pos2:vector2 , Pos3:vector2 , Color:vector){
+    EGP:egpTriangle(n(ID), Pos1, Pos2, Pos3)
+    EGP:egpColor(getN(ID), Color)        
+}
+function void drawTriangleOutline(ID:string , Pos1:vector2 , Pos2:vector2 , Pos3:vector2 , Color:vector, Size){
+    EGP:egpTriangleOutline(n(ID), Pos1, Pos2, Pos3)
+    EGP:egpColor(getN(ID), Color)    
+    EGP:egpSize(getN(ID), Size)    
+}
+# -- REMOVE
+function void removeElement(ID:string){
+    EGP:egpRemove(getN(ID))
+    EGP:egpRemove(getN(ID+"btntext"))
+}
+# -- VISIBLE
+function void drawVisible(ID:string, Num){
+    EGP:egpAlpha(getN(ID), 255*round(clamp(Num, 0, 1)))
+    EGP:egpAlpha(getN(ID+"btntext"), 255*round(clamp(Num, 0, 1)))
+}
+# -- SHORTCUT
+function void drawShortcut(ID:string, Name:string, Clr:vector, TypeFile:string){
+    X=X+2
+    if(X>=22){
+        X=2
+        Y=Y+2
+    }
+    EGP:egpBox(n(ID), vec2(25*X,25*Y)+vec2(-15,25),vec2(25))
+    EGP:egpColor(getN(ID), Clr)
+
+    if(Name:length()>8){
+        EGP:egpText(n(ID+"shortcuttext"), Name:left(8)+"...", vec2(0,20))
+        EGP:egpColor(getN(ID+"shortcuttext"),vec(255))
+        EGP:egpParent(getN(ID+"shortcuttext"), getN(ID))
+        EGP:egpSize(getN(ID+"shortcuttext") , 10) 
+        EGP:egpAlign(getN(ID+"shortcuttext") , 1 , 1)
+    }else{
+        EGP:egpText(n(ID+"shortcuttext"), Name, vec2(0,20))
+        EGP:egpColor(getN(ID+"shortcuttext"),vec(255))
+        EGP:egpParent(getN(ID+"shortcuttext"), getN(ID))
+        EGP:egpSize(getN(ID+"shortcuttext") , 10) 
+        EGP:egpAlign(getN(ID+"shortcuttext") , 1 , 1)
+    }
+    EGP:egpBox(n(ID+"shortcuttopbar"), vec2(0,-25/2),vec2(25,6))
+    EGP:egpParent(getN(ID+"shortcuttopbar"), getN(ID))
+    EGP:egpColor(getN(ID+"shortcuttopbar"), vec(255)/1.5)
+    
+    drawText(ID+"shortcuttopbartext", "---",vec2(0,-40/2.7), vec(255)/2,22)
+    EGP:egpParent(getN(ID+"shortcuttopbartext"), getN(ID))
+    
+    
+    switch(TypeFile){ 
+        case "txt", 
+            EGP:egpText(n(ID+"shortcuttypetxt"), "txt", vec2(0,0))
+            EGP:egpColor(getN(ID+"shortcuttypetxt"),vec(0))
+            EGP:egpParent(getN(ID+"shortcuttypetxt"), getN(ID))
+            EGP:egpSize(getN(ID+"shortcuttypetxt") , 10) 
+            EGP:egpAlign(getN(ID+"shortcuttypetxt") , 1 , 1)
+        break
+        case "exe", 
+            EGP:egpText(n(ID+"shortcuttypeexe"), "exe", vec2(0,0))
+            EGP:egpColor(getN(ID+"shortcuttypeexe"),vec(0))
+            EGP:egpParent(getN(ID+"shortcuttypeexe"), getN(ID))
+            EGP:egpSize(getN(ID+"shortcuttypeexe") , 10) 
+            EGP:egpAlign(getN(ID+"shortcuttypeexe") , 1 , 1)
+        break
+        case "http", 
+            EGP:egpText(n(ID+"shortcuttypehttp"), "http", vec2(0,0))
+            EGP:egpColor(getN(ID+"shortcuttypehttp"),vec(0))
+            EGP:egpParent(getN(ID+"shortcuttypehttp"), getN(ID))
+            EGP:egpSize(getN(ID+"shortcuttypehttp") , 10) 
+            EGP:egpAlign(getN(ID+"shortcuttypehttp") , 1 , 1)
+        break
+        default,
+            EGP:egpText(n(ID+"shortcuttypenil"), "nil", vec2(0,0))
+            EGP:egpColor(getN(ID+"shortcuttypenil"),vec(0))
+            EGP:egpParent(getN(ID+"shortcuttypenil"), getN(ID))
+            EGP:egpSize(getN(ID+"shortcuttypenil") , 10) 
+            EGP:egpAlign(getN(ID+"shortcuttypenil") , 1 , 1)
+        break
+    }
+}
+function void drawShortcutOutline(ID:string, Name:string, Clr:vector, Size){
+    X=X+2
+    if(X>=22){
+        X=2
+        Y=Y+2
+    }
+    EGP:egpBoxOutline(n(ID), vec2(25*X,25*Y)+vec2(-15,25),vec2(25))
+    EGP:egpColor(getN(ID), Clr)
+
+    EGP:egpText(n(ID+"shortcuttext"), Name, vec2(0,20))
+    EGP:egpColor(getN(ID+"shortcuttext"),vec(255))
+    EGP:egpParent(getN(ID+"shortcuttext"), getN(ID))
+    EGP:egpSize(getN(ID+"shortcuttext") , 10) 
+    EGP:egpAlign(getN(ID+"shortcuttext") , 1 , 1)
+    
+    EGP:egpBox(n(ID+"shortcuttopbar"), vec2(0,-25/2),vec2(25,8))
+    EGP:egpParent(getN(ID+"shortcuttopbar"), getN(ID))
+    EGP:egpColor(getN(ID+"shortcuttopbar"), vec(255)/1.5)
+    
+    drawText(ID+"shortcuttopbartext", "...",vec2(0,-40/2), vec(255)/2,25)
+    EGP:egpParent(getN(ID+"shortcuttopbartext"), getN(ID))
+}
+function void deleteShortcut(ID:string){
+    EGP:egpRemove(getN(ID))
+    EGP:egpRemove(getN(ID+"shortcuttext"))
+    EGP:egpRemove(getN(ID+"shortcuttopbar"))
+    EGP:egpRemove(getN(ID+"shortcuttopbartext"))
+}
+# -- RENAME PROGRAM & CLOSE PROGRAM
+function void drawSetNameProgram(ID:string, Name:string){
+    EGP:egpSetText(getN(ID+"rogramname"), Name)
+}
+function void drawCloseProgram(ID:string){
+    EGP:egpRemove(getN(ID))
+    EGP:egpRemove(getN(ID+"programname"))
+    EGP:egpRemove(getN(ID+"propgrambackground"))
+    EGP:egpRemove(getN(ID+"programclosebutton"))
+    EGP:egpRemove(getN(ID+"programfullscrenebutton"))
+    removeN(ID)
+    removeN(ID+"programname")
+    removeN(ID+"propgrambackground")
+    removeN(ID+"programclosebutton")
+    removeN(ID+"programfullscrenebutton")
+}
+# -- OPEN PROGRAMS
+function void drawProgram(ID:string, OpenPos:vector2, Size:vector2, Name:string, ClrBackground:vector){
+    if(!drawIsValid(ID)){
+        EGP:egpBox(n(ID), OpenPos-vec2(0,OpenPos:y()/2), vec2(Size:x(), 16))
+        EGP:egpColor(getN(ID), vec(80))
+    
+        EGP:egpText(n(ID+"programname"), Name, vec2(0,0))
+        EGP:egpColor(getN(ID+"programname"),vec(255))
+        EGP:egpParent(getN(ID+"programname"), getN(ID))
+        EGP:egpSize(getN(ID+"programname") , 15) 
+        EGP:egpAlign(getN(ID+"programname") , 1 , 1)
+    
+        EGP:egpBox(n(ID+"propgrambackground"), vec2(0,8+Size:y()/2), Size)
+        EGP:egpParent(getN(ID+"propgrambackground"), getN(ID))
+        EGP:egpColor(getN(ID+"propgrambackground"), ClrBackground)
+        
+        EGP:egpCircle(n(ID+"programclosebutton"), vec2((Size:x()/2)-8,0), vec2(4))
+        EGP:egpParent(getN(ID+"programclosebutton"), getN(ID))
+        EGP:egpColor(getN(ID+"programclosebutton"), vec(244,67,54))
+        
+        EGP:egpCircle(n(ID+"programfullscrenebutton"), vec2((Size:x()/2)-25,0), vec2(4))
+        EGP:egpParent(getN(ID+"programfullscrenebutton"), getN(ID))
+        EGP:egpColor(getN(ID+"programfullscrenebutton"), vec(33,150,243))
+    }
+}
+# -- PARENT
+function void drawParent(ID1:string, ID2:string){
+    EGP:egpParent(getN(ID1), getN(ID2))
+}
+# -- RESIZE PROGRAM
+function void drawProgramSize(ID:string, Size:vector2){
+    EGP:egpSize(getN(ID), vec2(Size:x(), 16))
+    EGP:egpSize(getN(ID+"propgrambackground"), Size)
+    EGP:egpPos(getN(ID+"propgrambackground"), vec2(0,8+Size:y()/2))
+    
+    EGP:egpPos(getN(ID+"programclosebutton"), vec2((Size:x()/2)-8,0))
+    EGP:egpPos(getN(ID+"programfullscrenebutton"), vec2((Size:x()/2)-25,0))
+}
+#
