@@ -1,9 +1,7 @@
 @name EGP_Lib
 @persist [PosSukaBlyatEbaniy]:vector2 SukaEbanayaTable:table Version:string IdPosaBlyatEbanogo IndexEbuchiye X Y
-#include "Chip_MDL"
-#include "EGP_MDL"
 
-Version="0.0.0"
+Version="0.1.0"
 function number n(Str:string){
     if(!SukaEbanayaTable[Str, number]){
         IndexEbuchiye++
@@ -381,4 +379,13 @@ function void drawProgramSize(ID:string, Size:vector2){
     EGP:egpPos(getN(ID+"programclosebutton"), vec2((Size:x()/2)-8,0))
     EGP:egpPos(getN(ID+"programfullscrenebutton"), vec2((Size:x()/2)-25,0))
 }
+# -- CURSOR POS TO PROGRAM
+function void drawPosTo(ID:string, ID2:string){
+    drawPos(ID, (EGP:egpPos(getN(ID))-EGP:egpPos(getN(ID2))+EGP:egpCursor(O)-EGP:egpPos(getN(ID))))
+}
+
+function number mouseOverTo(ID:string, ID2:string){
+    return inrange(EGP:egpCursor(owner())-EGP:egpPos(getN(ID2)), EGP:egpPos(getN(ID)) - EGP:egpSize(getN(ID)) / 2 , EGP:egpPos(getN(ID)) + EGP:egpSize(getN(ID)) / 2 )
+}
 #
+
