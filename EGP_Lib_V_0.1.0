@@ -1,7 +1,7 @@
 @name EGP_Lib
 @persist [PosSukaBlyatEbaniy]:vector2 SukaEbanayaTable:table Version:string IdPosaBlyatEbanogo IndexEbuchiye X Y
 
-Version="0.1.0"
+Version="0.1.1"
 function number n(Str:string){
     if(!SukaEbanayaTable[Str, number]){
         IndexEbuchiye++
@@ -324,22 +324,42 @@ function void deleteShortcut(ID:string){
     EGP:egpRemove(getN(ID+"shortcuttext"))
     EGP:egpRemove(getN(ID+"shortcuttopbar"))
     EGP:egpRemove(getN(ID+"shortcuttopbartext"))
+    
+    EGP:egpRemove(getN(ID+"shortcuttypetxt"))
+    EGP:egpRemove(getN(ID+"shortcuttypeexe"))
+    EGP:egpRemove(getN(ID+"shortcuttypehttp"))
+    EGP:egpRemove(getN(ID+"shortcuttypenil"))
 }
-# -- RENAME PROGRAM & CLOSE PROGRAM
+# -- RENAME PROGRAM
 function void drawSetNameProgram(ID:string, Name:string){
     EGP:egpSetText(getN(ID+"rogramname"), Name)
 }
+# -- CURSOR POS TO PROGRAM
+function void drawPosTo(ID:string, ID2:string){
+    drawPos(ID, (EGP:egpPos(getN(ID))-EGP:egpPos(getN(ID2))+EGP:egpCursor(O)-EGP:egpPos(getN(ID))))
+}
+
+function number mouseOverTo(ID:string, ID2:string){
+    if(drawIsValid(ID2)){
+        return inrange(EGP:egpCursor(owner())-EGP:egpPos(getN(ID2)), EGP:egpPos(getN(ID)) - EGP:egpSize(getN(ID)) / 2 , EGP:egpPos(getN(ID)) + EGP:egpSize(getN(ID)) / 2 )
+    }else{
+        return 0
+    }
+}
+# -- CLOSE PROGRAM
 function void drawCloseProgram(ID:string){
-    EGP:egpRemove(getN(ID))
-    EGP:egpRemove(getN(ID+"programname"))
-    EGP:egpRemove(getN(ID+"propgrambackground"))
-    EGP:egpRemove(getN(ID+"programclosebutton"))
-    EGP:egpRemove(getN(ID+"programfullscrenebutton"))
-    removeN(ID)
-    removeN(ID+"programname")
-    removeN(ID+"propgrambackground")
-    removeN(ID+"programclosebutton")
-    removeN(ID+"programfullscrenebutton")
+    if(mouseOverTo(ID+"programclosebutton", ID) & click()){
+        EGP:egpRemove(getN(ID))
+        EGP:egpRemove(getN(ID+"programname"))
+        EGP:egpRemove(getN(ID+"propgrambackground"))
+        EGP:egpRemove(getN(ID+"programclosebutton"))
+        EGP:egpRemove(getN(ID+"programfullscrenebutton"))
+        removeN(ID)
+        removeN(ID+"programname")
+        removeN(ID+"propgrambackground")
+        removeN(ID+"programclosebutton")
+        removeN(ID+"programfullscrenebutton")
+    }
 }
 # -- OPEN PROGRAMS
 function void drawProgram(ID:string, OpenPos:vector2, Size:vector2, Name:string, ClrBackground:vector){
@@ -357,11 +377,11 @@ function void drawProgram(ID:string, OpenPos:vector2, Size:vector2, Name:string,
         EGP:egpParent(getN(ID+"propgrambackground"), getN(ID))
         EGP:egpColor(getN(ID+"propgrambackground"), ClrBackground)
         
-        EGP:egpCircle(n(ID+"programclosebutton"), vec2((Size:x()/2)-8,0), vec2(4))
+        EGP:egpCircle(n(ID+"programclosebutton"), vec2((Size:x()/2)-8,0), vec2(7))
         EGP:egpParent(getN(ID+"programclosebutton"), getN(ID))
         EGP:egpColor(getN(ID+"programclosebutton"), vec(244,67,54))
         
-        EGP:egpCircle(n(ID+"programfullscrenebutton"), vec2((Size:x()/2)-25,0), vec2(4))
+        EGP:egpCircle(n(ID+"programfullscrenebutton"), vec2((Size:x()/2)-25,0), vec2(7))
         EGP:egpParent(getN(ID+"programfullscrenebutton"), getN(ID))
         EGP:egpColor(getN(ID+"programfullscrenebutton"), vec(33,150,243))
     }
@@ -370,22 +390,4 @@ function void drawProgram(ID:string, OpenPos:vector2, Size:vector2, Name:string,
 function void drawParent(ID1:string, ID2:string){
     EGP:egpParent(getN(ID1), getN(ID2))
 }
-# -- RESIZE PROGRAM
-function void drawProgramSize(ID:string, Size:vector2){
-    EGP:egpSize(getN(ID), vec2(Size:x(), 16))
-    EGP:egpSize(getN(ID+"propgrambackground"), Size)
-    EGP:egpPos(getN(ID+"propgrambackground"), vec2(0,8+Size:y()/2))
-    
-    EGP:egpPos(getN(ID+"programclosebutton"), vec2((Size:x()/2)-8,0))
-    EGP:egpPos(getN(ID+"programfullscrenebutton"), vec2((Size:x()/2)-25,0))
-}
-# -- CURSOR POS TO PROGRAM
-function void drawPosTo(ID:string, ID2:string){
-    drawPos(ID, (EGP:egpPos(getN(ID))-EGP:egpPos(getN(ID2))+EGP:egpCursor(O)-EGP:egpPos(getN(ID))))
-}
-
-function number mouseOverTo(ID:string, ID2:string){
-    return inrange(EGP:egpCursor(owner())-EGP:egpPos(getN(ID2)), EGP:egpPos(getN(ID)) - EGP:egpSize(getN(ID)) / 2 , EGP:egpPos(getN(ID)) + EGP:egpSize(getN(ID)) / 2 )
-}
 #
-
