@@ -1,7 +1,8 @@
 @name EGP_Lib
-@persist [PosSukaBlyatEbaniy]:vector2 SukaEbanayaTable:table Version:string IdPosaBlyatEbanogo IndexEbuchiye X Y
+@persist [PosSukaBlyatEbaniy]:vector2 [SukaEbanayaTable]:table Version:string [Shortcuts PTP]:array IdPosaBlyatEbanogo Suka IndexEbuchiye NumberEbatb X Y
+@persist
 
-Version="0.1.1"
+Version="0.3.3"
 function number n(Str:string){
     if(!SukaEbanayaTable[Str, number]){
         IndexEbuchiye++
@@ -30,7 +31,7 @@ function number click(){
 }
 function void grabElement(ID:string){
     if(mouseOver(ID)){
-        if(changed(owner():keyUse()) & owner():keyUse()){
+        if(changed(owner():keyAttack1()) & owner():keyAttack1()){
             IdPosaBlyatEbanogo=getN(ID)
             PosSukaBlyatEbaniy=(EGP:egpCursor(owner()) - EGP:egpPos(getN(ID)))
         }
@@ -39,7 +40,7 @@ function void grabElement(ID:string){
         if(IdPosaBlyatEbanogo==getN(ID)){
             EGP:egpPos(getN(ID),EGP:egpCursor(owner())-PosSukaBlyatEbaniy)
         }
-        if(!owner():keyUse() & IdPosaBlyatEbanogo!=0){
+        if(!owner():keyAttack1() & IdPosaBlyatEbanogo!=0){
             IdPosaBlyatEbanogo=0
             PosSukaBlyatEbaniy=vec2()
         }
@@ -128,6 +129,15 @@ function void drawColor(ID:string, Clr:vector){
     if(getN(ID)!=0){
         EGP:egpColor(getN(ID), Clr)
     }
+}
+# -- ALPHA
+function void drawAlpha(ID:string, Alpha){
+    if(getN(ID)!=0){
+        EGP:egpAlpha(getN(ID), Alpha)
+    }
+}
+function number drawAlpha(ID:string){
+    return EGP:egpAlpha(getN(ID))
 }
 # -- POS
 function void drawPos(ID:string, Pos:vector2){
@@ -229,11 +239,16 @@ function void drawTriangleOutline(ID:string , Pos1:vector2 , Pos2:vector2 , Pos3
 function void removeElement(ID:string){
     EGP:egpRemove(getN(ID))
     EGP:egpRemove(getN(ID+"btntext"))
+    
+    removeN(ID)
+    removeN(ID+"btntext")
 }
 # -- VISIBLE
 function void drawVisible(ID:string, Num){
     EGP:egpAlpha(getN(ID), 255*round(clamp(Num, 0, 1)))
-    EGP:egpAlpha(getN(ID+"btntext"), 255*round(clamp(Num, 0, 1)))
+    if(getN(ID+"btntext")>0){
+        EGP:egpAlpha(getN(ID+"btntext"), 255*round(clamp(Num, 0, 1)))
+    }
 }
 # -- SHORTCUT
 function void drawShortcut(ID:string, Name:string, Clr:vector, TypeFile:string){
@@ -244,20 +259,16 @@ function void drawShortcut(ID:string, Name:string, Clr:vector, TypeFile:string){
     }
     EGP:egpBox(n(ID), vec2(25*X,25*Y)+vec2(-15,25),vec2(25))
     EGP:egpColor(getN(ID), Clr)
-
+    Shortcuts:pushString(ID)
     if(Name:length()>8){
         EGP:egpText(n(ID+"shortcuttext"), Name:left(8)+"...", vec2(0,20))
-        EGP:egpColor(getN(ID+"shortcuttext"),vec(255))
-        EGP:egpParent(getN(ID+"shortcuttext"), getN(ID))
-        EGP:egpSize(getN(ID+"shortcuttext") , 10) 
-        EGP:egpAlign(getN(ID+"shortcuttext") , 1 , 1)
     }else{
         EGP:egpText(n(ID+"shortcuttext"), Name, vec2(0,20))
-        EGP:egpColor(getN(ID+"shortcuttext"),vec(255))
-        EGP:egpParent(getN(ID+"shortcuttext"), getN(ID))
-        EGP:egpSize(getN(ID+"shortcuttext") , 10) 
-        EGP:egpAlign(getN(ID+"shortcuttext") , 1 , 1)
     }
+    EGP:egpColor(getN(ID+"shortcuttext"),vec(255))
+    EGP:egpParent(getN(ID+"shortcuttext"), getN(ID))
+    EGP:egpSize(getN(ID+"shortcuttext") , 10) 
+    EGP:egpAlign(getN(ID+"shortcuttext") , 1 , 1)
     EGP:egpBox(n(ID+"shortcuttopbar"), vec2(0,-25/2),vec2(25,6))
     EGP:egpParent(getN(ID+"shortcuttopbar"), getN(ID))
     EGP:egpColor(getN(ID+"shortcuttopbar"), vec(255)/1.5)
@@ -289,10 +300,10 @@ function void drawShortcut(ID:string, Name:string, Clr:vector, TypeFile:string){
             EGP:egpAlign(getN(ID+"shortcuttypehttp") , 1 , 1)
         break
         default,
-            EGP:egpText(n(ID+"shortcuttypenil"), "nil", vec2(0,0))
+            EGP:egpText(n(ID+"shortcuttypenil"), "Unkown", vec2(0,0))
             EGP:egpColor(getN(ID+"shortcuttypenil"),vec(0))
             EGP:egpParent(getN(ID+"shortcuttypenil"), getN(ID))
-            EGP:egpSize(getN(ID+"shortcuttypenil") , 10) 
+            EGP:egpSize(getN(ID+"shortcuttypenil") , 7) 
             EGP:egpAlign(getN(ID+"shortcuttypenil") , 1 , 1)
         break
     }
@@ -329,6 +340,16 @@ function void deleteShortcut(ID:string){
     EGP:egpRemove(getN(ID+"shortcuttypeexe"))
     EGP:egpRemove(getN(ID+"shortcuttypehttp"))
     EGP:egpRemove(getN(ID+"shortcuttypenil"))
+    
+    removeN(ID)
+    removeN(ID+"shortcuttext")
+    removeN(ID+"shortcuttopbar")
+    removeN(ID+"shortcuttopbartext")
+    
+    removeN(ID+"shortcuttypetxt")
+    removeN(ID+"shortcuttypeexe")
+    removeN(ID+"shortcuttypehttp")
+    removeN(ID+"shortcuttypenil")
 }
 # -- RENAME PROGRAM
 function void drawSetNameProgram(ID:string, Name:string){
@@ -348,17 +369,49 @@ function number mouseOverTo(ID:string, ID2:string){
 }
 # -- CLOSE PROGRAM
 function void drawCloseProgram(ID:string){
-    if(mouseOverTo(ID+"programclosebutton", ID) & click()){
-        EGP:egpRemove(getN(ID))
-        EGP:egpRemove(getN(ID+"programname"))
-        EGP:egpRemove(getN(ID+"propgrambackground"))
-        EGP:egpRemove(getN(ID+"programclosebutton"))
-        EGP:egpRemove(getN(ID+"programfullscrenebutton"))
-        removeN(ID)
-        removeN(ID+"programname")
-        removeN(ID+"propgrambackground")
-        removeN(ID+"programclosebutton")
-        removeN(ID+"programfullscrenebutton")
+    if(drawIsValid(ID)){
+        if(mouseOverTo(ID+"programclosebutton", ID) & click()){
+            drawVisible(ID, 0)
+            drawVisible(ID+"programname", 0)
+            drawVisible(ID+"programbackground", 0)
+            drawVisible(ID+"programclosebutton", 0)
+            drawVisible(ID+"programturnbordedbutton", 0)
+            drawVisible(ID+"programturnbuttonss", 0)
+            drawVisible(ID+"programturnbutton", 0)
+            for(Objects=1,PTP:count()){   
+                drawVisible(PTP[Objects, string], 0)
+            }
+        }
+    }
+}
+
+function void drawCloseProgramF(ID:string){
+    if(drawIsValid(ID) & drawAlpha(ID)==255){
+        drawVisible(ID, 0)
+        drawVisible(ID+"programname", 0)
+        drawVisible(ID+"programbackground", 0)
+        drawVisible(ID+"programclosebutton", 0)
+        drawVisible(ID+"programturnbordedbutton", 0)
+        drawVisible(ID+"programturnbuttonss", 0)
+        drawVisible(ID+"programturnbutton", 0)
+        for(Objects=1,PTP:count()){   
+            drawVisible(PTP[Objects, string], 0)
+        }
+    }
+}
+
+function void drawOpenProgram(ID:string){
+    if(drawIsValid(ID)){
+        drawVisible(ID, 1)
+        drawVisible(ID+"programname", 1)
+        drawVisible(ID+"programbackground", 1)
+        drawVisible(ID+"programclosebutton", 1)
+        drawVisible(ID+"programturnbordedbutton", 1)
+        drawVisible(ID+"programturnbuttonss", 1)
+        drawVisible(ID+"programturnbutton", 1)
+        for(Objects=1,PTP:count()){   
+            drawVisible(PTP[Objects, string], 1)
+        }
     }
 }
 # -- OPEN PROGRAMS
@@ -373,21 +426,86 @@ function void drawProgram(ID:string, OpenPos:vector2, Size:vector2, Name:string,
         EGP:egpSize(getN(ID+"programname") , 15) 
         EGP:egpAlign(getN(ID+"programname") , 1 , 1)
     
-        EGP:egpBox(n(ID+"propgrambackground"), vec2(0,8+Size:y()/2), Size)
-        EGP:egpParent(getN(ID+"propgrambackground"), getN(ID))
-        EGP:egpColor(getN(ID+"propgrambackground"), ClrBackground)
+        EGP:egpBox(n(ID+"programbackground"), vec2(0,8+Size:y()/2), Size)
+        EGP:egpParent(getN(ID+"programbackground"), getN(ID))
+        EGP:egpColor(getN(ID+"programbackground"), ClrBackground)
         
-        EGP:egpCircle(n(ID+"programclosebutton"), vec2((Size:x()/2)-8,0), vec2(7))
+        EGP:egpBox(n(ID+"programclosebutton"), vec2((Size:x()/2)-8,0), vec2(9))
         EGP:egpParent(getN(ID+"programclosebutton"), getN(ID))
         EGP:egpColor(getN(ID+"programclosebutton"), vec(244,67,54))
         
-        EGP:egpCircle(n(ID+"programfullscrenebutton"), vec2((Size:x()/2)-25,0), vec2(7))
-        EGP:egpParent(getN(ID+"programfullscrenebutton"), getN(ID))
-        EGP:egpColor(getN(ID+"programfullscrenebutton"), vec(33,150,243))
+        EGP:egpBoxOutline(n(ID+"programturnbordedbutton"), vec2((Size:x()/2)-25,0), vec2(9))
+        EGP:egpParent(getN(ID+"programturnbordedbutton"), getN(ID))
+        EGP:egpColor(getN(ID+"programturnbordedbutton"), vec(33,150,243))
+        
+        EGP:egpBox(n(ID+"programturnbuttonss"), vec2((Size:x()/2)-25,2.5), vec2(5,1))
+        EGP:egpParent(getN(ID+"programturnbuttonss"), getN(ID))
+        EGP:egpColor(getN(ID+"programturnbuttonss"), vec(33,150,243))
+        
+        EGP:egpBox(n(ID+"programturnbutton"), vec2((Size:x()/2)-25,2.5), vec2(5,1))
+        EGP:egpParent(getN(ID+"programturnbutton"), getN(ID))
+        EGP:egpColor(getN(ID+"programturnbutton"), vec(33,150,243))
     }
+}
+# -- TO PROGRAM
+function void drawParentToProgram(ID:string, ID2:string){
+    EGP:egpParent(getN(ID), getN(ID+"programbackground"))
+    if(changed(PTP:count()==0) & PTP:count()==0){
+        PTP=array()
+    }
+    PTP:pushString(ID)
 }
 # -- PARENT
 function void drawParent(ID1:string, ID2:string){
     EGP:egpParent(getN(ID1), getN(ID2))
+}
+# -- AUTO GRAB
+function void grabShortcuts(){
+    for(I=1,Shortcuts:count()){
+        grabElement(Shortcuts[I,string])
+    }
+}
+
+function number getShortcuts(){
+    for(I=1,Shortcuts:count()){
+        return getN(Shortcuts[I,string])
+    }
+}
+
+# -- CONTROL MENU
+function void drawControl(ID:string){
+    drawBox(ID, vec2(256), vec2(100,150))
+    drawColor(ID, vec(50))
+    drawAlpha(ID, 50)
+    
+    drawBoxButton(ID+"buttonremove", vec2(0,62), vec2(100,25), vec(50), "Remove", vec(100), 25)
+    drawParent(ID+"buttonremove", ID)
+}
+
+# -- PROGRAM IS VALID
+function number drawProgramIsValid(ID:string){
+    if(drawAlpha(ID)==255){
+        return 1
+    }else{
+        return 0
+    }
+}
+# -- DRAW LINE
+function void drawLine(ID:string, Vec1:vector2, Vec2:vector2, Size){
+    EGP:egpLine(n(ID), Vec1, Vec2)
+    EGP:egpSize(getN(ID), Size)
+    drawSize(ID, Size)
+}
+function void drawLine(ID:string, Vec1:vector2, Vec2:vector2, Color:vector, Size){
+    EGP:egpLine(n(ID), Vec1, Vec2)
+    drawSize(ID, Size)
+    drawColor(ID, Color)
+}
+function void drawLine(ID:string, Vec1:vector2, Vec2:vector2){
+    EGP:egpLine(n(ID), Vec1, Vec2)
+}
+function void drawLine(ID:string, Vec1:vector2, Vec2:vector2, Color:vector,){
+    EGP:egpLine(n(ID), Vec1, Vec2)
+    drawColor(ID, Color)
 }
 #
